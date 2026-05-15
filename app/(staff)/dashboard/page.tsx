@@ -1,14 +1,10 @@
 'use client'
 
 import { 
-  Users, 
-  Calendar, 
   Clock, 
   TrendingUp, 
   MoreVertical, 
-  Globe,
-  ArrowUpRight,
-  ArrowDownRight
+  Globe
 } from 'lucide-react'
 
 export default function DashboardPage() {
