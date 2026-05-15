@@ -17,7 +17,7 @@ export default function LoginPage() {
   const { toast } = useToast()
   const supabase = createClient()
 
-  const [email, setEmail] = useState('')
+  const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -27,6 +27,15 @@ export default function LoginPage() {
     setLoading(true)
 
     try {
+      // 1. Buscar el email asociado al nombre de usuario
+      const { data: email, error: lookupError } = await supabase
+        .rpc('get_staff_email_by_username', { p_username: username.toLowerCase().trim() })
+
+      if (lookupError || !email) {
+        throw new Error("Nombre de usuario no válido o no registrado.")
+      }
+
+      // 2. Proceder con el login usando el email encontrado
       const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
@@ -41,10 +50,10 @@ export default function LoginPage() {
       
       router.push('/dashboard')
       router.refresh()
-    } catch (error: unknown) {
+    } catch (error: any) {
       toast({
         title: "Error de acceso",
-        description: error instanceof Error ? error.message : "Credenciales inválidas",
+        description: error.message || "Credenciales inválidas",
         variant: "destructive",
       })
     } finally {
@@ -89,15 +98,15 @@ export default function LoginPage() {
 
           <form onSubmit={handleLogin} className="space-y-6 mt-8">
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-sm font-medium text-slate-700">
-                Correo Electrónico
+              <Label htmlFor="username" className="text-sm font-medium text-slate-700">
+                Nombre de Usuario
               </Label>
               <Input
-                id="email"
-                type="email"
-                placeholder="usuario@upcn.org.ar"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                id="username"
+                type="text"
+                placeholder="Ej: jgalarza"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
                 required
                 className="bg-slate-50 border-slate-200 text-slate-900 placeholder:text-slate-400 focus:ring-sky-500 focus:border-sky-500 h-11"
               />

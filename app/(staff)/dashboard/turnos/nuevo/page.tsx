@@ -134,7 +134,7 @@ export default function NuevoTurnoPage() {
         title: "¡Turno creado!",
         description: `El turno para ${afiliado.nombre} ha sido agendado con éxito.`,
       })
-      router.push('/turnos')
+      router.push('/dashboard/turnos')
     } catch (error: unknown) {
       toast({
         title: "Error",

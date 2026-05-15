@@ -122,7 +122,7 @@ export default function TurnosPage() {
           <p className="text-muted-foreground">Listado y control de citas médicas.</p>
         </div>
         <Button asChild>
-          <Link href="/turnos/nuevo">
+          <Link href="/dashboard/turnos/nuevo">
             <Plus className="mr-2 h-4 w-4" /> Nuevo Turno
           </Link>
         </Button>

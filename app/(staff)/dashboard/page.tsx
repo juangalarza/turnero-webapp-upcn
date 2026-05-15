@@ -4,12 +4,49 @@ import {
   Clock, 
   TrendingUp, 
   MoreVertical, 
-  Globe
+  Globe,
+  Loader2
 } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { createClient } from '@/lib/supabase/client'
+import TurnosPage from './turnos/page'
 
 export default function DashboardPage() {
+  const [rol, setRol] = useState<string | null>(null)
+  const [loading, setLoading] = useState(true)
+  const supabase = createClient()
+
+  useEffect(() => {
+    async function getRol() {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        const { data } = await supabase
+          .from('staff_profiles')
+          .select('rol')
+          .eq('id', user.id)
+          .single()
+        if (data) setRol(data.rol)
+      }
+      setLoading(false)
+    }
+    getRol()
+  }, [supabase])
+
+  if (loading) {
+    return (
+      <div className="h-[60vh] flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-sky-500" />
+      </div>
+    )
+  }
+
+  // Switch de vistas según el rol
+  if (rol !== 'admin') {
+    return <TurnosPage />
+  }
+
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 animate-in fade-in duration-500">
       {/* Top Card: Turnos por Especialidad (Inspired by Sales by Country) */}
       <div className="bg-white rounded-[2rem] shadow-xl shadow-slate-200/50 p-8 overflow-hidden relative">
         <div className="flex flex-col lg:flex-row gap-12">

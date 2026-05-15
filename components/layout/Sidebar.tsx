@@ -12,38 +12,72 @@ import {
   ChevronDown,
   LogOut,
   User,
-  ClipboardList
+  ClipboardList,
+  Loader2
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import logo from '../../public/logo.png'
+import { createClient } from '@/lib/supabase/client'
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 
 const menuItems = [
   {
     title: 'DASHBOARDS',
+    roles: ['admin'],
     items: [
       { name: 'Analytics', href: '/dashboard', icon: LayoutDashboard },
     ]
   },
   {
     title: 'GESTIÓN',
+    roles: ['admin', 'recepcion', 'profesional'],
     items: [
-      { name: 'Turnos', href: '/turnos', icon: Calendar },
-      { name: 'Afiliados', href: '/afiliados', icon: Users },
-      { name: 'Profesionales', href: '/profesionales', icon: User },
-      { name: 'Agenda', href: '/agenda', icon: ClipboardList },
+      { name: 'Turnos', href: '/dashboard/turnos', icon: Calendar },
+      { name: 'Afiliados', href: '/dashboard/afiliados', icon: Users },
+      { name: 'Profesionales', href: '/dashboard/profesionales', icon: User },
+      { name: 'Agenda', href: '/dashboard/agenda', icon: ClipboardList },
     ]
   },
   {
     title: 'SISTEMA',
+    roles: ['admin'],
     items: [
-      { name: 'Reportes', href: '/reportes', icon: FileText },
-      { name: 'Configuración', href: '/configuracion', icon: Settings },
+      { name: 'Reportes', href: '/dashboard/reportes', icon: FileText },
+      { name: 'Gestión Staff', href: '/dashboard/configuracion/staff', icon: Users },
+      { name: 'Configuración', href: '/dashboard/configuracion', icon: Settings },
     ]
   }
 ]
 
 export function Sidebar() {
   const pathname = usePathname()
+  const router = useRouter()
+  const supabase = createClient()
+  const [userProfile, setUserProfile] = useState<{ nombre: string, apellido: string, rol: string } | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function getProfile() {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        const { data } = await supabase
+          .from('staff_profiles')
+          .select('nombre, apellido, rol')
+          .eq('id', user.id)
+          .single()
+        
+        if (data) setUserProfile(data)
+      }
+      setLoading(false)
+    }
+    getProfile()
+  }, [supabase])
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut()
+    router.push('/login')
+  }
 
   return (
     <aside className="fixed left-4 top-4 bottom-4 w-64 bg-[#1f283e] rounded-3xl overflow-hidden shadow-2xl flex flex-col text-slate-300">
@@ -56,24 +90,30 @@ export function Sidebar() {
       </div>
 
       {/* User Profile */}
-      <div className="p-6 flex items-center justify-between group cursor-pointer hover:bg-slate-800/50 transition-colors">
+      <Link href="/dashboard/perfil" className="p-6 flex items-center justify-between group cursor-pointer hover:bg-slate-800/50 transition-colors">
         <div className="flex items-center gap-3">
           <div className="h-10 w-10 rounded-full bg-gradient-to-tr from-sky-600 to-sky-400 flex items-center justify-center text-white font-bold shadow-lg shadow-sky-900/20">
-            JD
+            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : userProfile ? `${userProfile.nombre.charAt(0)}${userProfile.apellido.charAt(0)}` : '??'}
           </div>
           <div className="flex flex-col">
-            <span className="text-sm font-semibold text-white">Juan Galarza</span>
-            <span className="text-[11px] text-slate-400 font-medium tracking-wide uppercase">Administrador</span>
+            <span className="text-sm font-semibold text-white group-hover:text-sky-400 transition-colors truncate max-w-[120px]">
+              {loading ? 'Cargando...' : userProfile ? `${userProfile.nombre} ${userProfile.apellido}` : 'Usuario'}
+            </span>
+            <span className="text-[11px] text-slate-400 font-medium tracking-wide uppercase">
+              {loading ? '...' : userProfile ? userProfile.rol : 'Staff'}
+            </span>
           </div>
         </div>
-        <ChevronDown className="h-4 w-4 text-slate-500" />
-      </div>
+        <ChevronDown className="h-4 w-4 text-slate-500 group-hover:text-sky-400 transition-colors" />
+      </Link>
 
       <hr className="mx-6 border-slate-700/30" />
 
       {/* Navigation */}
       <nav className="flex-1 overflow-y-auto p-4 space-y-8 scrollbar-hide">
-        {menuItems.map((group) => (
+        {menuItems
+          .filter(group => group.roles.includes(userProfile?.rol || 'recepcion'))
+          .map((group) => (
           <div key={group.title} className="space-y-2">
             <h3 className="px-4 text-[10px] font-bold text-slate-500 tracking-[0.1em] uppercase">
               {group.title}
@@ -107,11 +147,15 @@ export function Sidebar() {
 
       {/* Footer */}
       <div className="p-4 mt-auto">
-        <button className="flex items-center gap-3 px-4 py-3 w-full rounded-xl hover:bg-red-500/10 text-slate-400 hover:text-red-400 transition-all group">
+        <button 
+          onClick={handleSignOut}
+          className="flex items-center gap-3 px-4 py-3 w-full rounded-xl hover:bg-red-500/10 text-slate-400 hover:text-red-400 transition-all group"
+        >
           <LogOut className="h-5 w-5 text-slate-500 group-hover:text-red-400" />
           <span className="text-sm font-medium">Cerrar Sesión</span>
         </button>
       </div>
     </aside>
+
   )
 }

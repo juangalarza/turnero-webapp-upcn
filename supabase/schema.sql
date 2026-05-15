@@ -101,12 +101,21 @@ CREATE TABLE IF NOT EXISTS staff_profiles (
   id              UUID PRIMARY KEY REFERENCES auth.users(id),
   nombre          TEXT NOT NULL,
   apellido        TEXT NOT NULL,
+  username        TEXT UNIQUE,
+  dni             TEXT,
+  telefono        TEXT,
+  email           TEXT,
   rol             TEXT NOT NULL CHECK (rol IN ('admin', 'recepcion', 'profesional')),
   profesional_id  UUID REFERENCES profesionales(id),  -- si rol = 'profesional'
   sede_id         UUID REFERENCES sedes(id),
   activo          BOOLEAN DEFAULT true,
-  created_at      TIMESTAMPTZ DEFAULT now()
+  created_at      TIMESTAMPTZ DEFAULT now(),
+  updated_at      TIMESTAMPTZ DEFAULT now()
 );
+
+CREATE TRIGGER trigger_staff_profiles_updated_at
+  BEFORE UPDATE ON staff_profiles
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
 -- ============================================================
 -- ÍNDICES
