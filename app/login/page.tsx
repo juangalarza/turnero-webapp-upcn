@@ -8,7 +8,9 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useToast } from '@/hooks/use-toast'
-import { Loader2, HeartPulse, Eye, EyeOff } from 'lucide-react'
+import { Loader2, Eye, EyeOff } from 'lucide-react'
+import logo from '../../public/logo.png'
+import bgLogin from '../../public/bg-login.jpg'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -55,30 +57,28 @@ export default function LoginPage() {
       {/* Left Side: Image */}
       <div className="relative hidden w-1/2 lg:block">
         <Image
-          src="/images/login-health-bg.png"
-          alt="Healthcare Environment"
+          src={bgLogin}
+          alt="UPCN Salud"
           fill
           className="object-cover"
           priority
         />
         <div className="absolute inset-0 bg-blue-900/10" />
-        
-        <div className="absolute left-12 top-12 z-10 flex items-center gap-2">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-sky-600">
-            <HeartPulse className="h-6 w-6 text-white" />
-          </div>
-          <span className="text-2xl font-bold tracking-tight text-slate-800">UPCN Salud</span>
-        </div>
       </div>
 
       {/* Right Side: Login Form */}
       <div className="flex w-full items-center justify-center px-8 lg:w-1/2 lg:px-24">
         <div className="w-full max-w-md space-y-8">
           <div className="space-y-2 text-center">
-            <div className="flex items-center justify-center gap-2 mb-4 lg:mb-8">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-sky-600 shadow-lg shadow-sky-200">
-                <HeartPulse className="h-7 w-7 text-white" />
-              </div>
+            <div className="flex items-center justify-center mb-6">
+              <Image 
+                src={logo} 
+                alt="Logo Institucional" 
+                width={200} 
+                height={80} 
+                className="object-contain"
+                priority
+              />
             </div>
             
             <h1 className="text-3xl font-bold tracking-tight text-slate-900">Gestión de Turnos</h1>
