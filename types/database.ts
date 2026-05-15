@@ -1,17 +1,22 @@
-// TODO: Reemplazar con tipos generados por Supabase CLI:
-// npx supabase gen types typescript --project-id <PROJECT_ID> > types/database.ts
+type Json =
+  | string
+  | number
+  | boolean
+  | null
+  | { [key: string]: Json | undefined }
+  | Json[]
 
 export type Database = {
   public: {
     Tables: {
-      sedes: { Row: Record<string, unknown>; Insert: Record<string, unknown>; Update: Record<string, unknown> }
-      especialidades: { Row: Record<string, unknown>; Insert: Record<string, unknown>; Update: Record<string, unknown> }
-      profesionales: { Row: Record<string, unknown>; Insert: Record<string, unknown>; Update: Record<string, unknown> }
-      horarios_atencion: { Row: Record<string, unknown>; Insert: Record<string, unknown>; Update: Record<string, unknown> }
-      bloqueos_agenda: { Row: Record<string, unknown>; Insert: Record<string, unknown>; Update: Record<string, unknown> }
-      afiliados: { Row: Record<string, unknown>; Insert: Record<string, unknown>; Update: Record<string, unknown> }
-      turnos: { Row: Record<string, unknown>; Insert: Record<string, unknown>; Update: Record<string, unknown> }
-      staff_profiles: { Row: Record<string, unknown>; Insert: Record<string, unknown>; Update: Record<string, unknown> }
+      sedes: { Row: { [key: string]: Json | undefined }; Insert: { [key: string]: Json | undefined }; Update: { [key: string]: Json | undefined }; Relationships: [] }
+      especialidades: { Row: { [key: string]: Json | undefined }; Insert: { [key: string]: Json | undefined }; Update: { [key: string]: Json | undefined }; Relationships: [] }
+      profesionales: { Row: { [key: string]: Json | undefined }; Insert: { [key: string]: Json | undefined }; Update: { [key: string]: Json | undefined }; Relationships: [] }
+      horarios_atencion: { Row: { [key: string]: Json | undefined }; Insert: { [key: string]: Json | undefined }; Update: { [key: string]: Json | undefined }; Relationships: [] }
+      bloqueos_agenda: { Row: { [key: string]: Json | undefined }; Insert: { [key: string]: Json | undefined }; Update: { [key: string]: Json | undefined }; Relationships: [] }
+      afiliados: { Row: { [key: string]: Json | undefined }; Insert: { [key: string]: Json | undefined }; Update: { [key: string]: Json | undefined }; Relationships: [] }
+      turnos: { Row: { [key: string]: Json | undefined }; Insert: { [key: string]: Json | undefined }; Update: { [key: string]: Json | undefined }; Relationships: [] }
+      staff_profiles: { Row: { [key: string]: Json | undefined }; Insert: { [key: string]: Json | undefined }; Update: { [key: string]: Json | undefined }; Relationships: [] }
     }
     Views: {
       [_ in never]: never

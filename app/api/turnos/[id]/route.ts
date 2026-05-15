@@ -14,13 +14,15 @@ export async function PATCH(
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
+  const updateData: Database['public']['Tables']['turnos']['Update'] = {
+    ...body,
+    updated_by: user.id,
+    updated_at: new Date().toISOString()
+  }
+  
   const { data, error } = await supabase
     .from('turnos')
-    .update({
-      ...body,
-      updated_by: user.id,
-      updated_at: new Date().toISOString()
-    } as Database['public']['Tables']['turnos']['Update'])
+    .update(updateData)
     .eq('id', params.id)
     .select()
     .single()
