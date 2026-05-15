@@ -13,5 +13,17 @@ export type Database = {
       turnos: { Row: Record<string, unknown>; Insert: Record<string, unknown>; Update: Record<string, unknown> }
       staff_profiles: { Row: Record<string, unknown>; Insert: Record<string, unknown>; Update: Record<string, unknown> }
     }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      [_ in never]: never
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
   }
 }

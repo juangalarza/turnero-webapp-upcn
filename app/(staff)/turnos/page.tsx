@@ -30,9 +30,8 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { useToast } from '@/hooks/use-toast'
 import { format } from 'date-fns'
-import { es } from 'date-fns/locale'
-import { Calendar as CalendarIcon, Filter, MoreHorizontal, User, RefreshCw, Plus } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Calendar as CalendarIcon, MoreHorizontal, RefreshCw, Plus } from 'lucide-react'
+import { Card } from '@/components/ui/card'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
 
@@ -40,8 +39,18 @@ export default function TurnosPage() {
   const { toast } = useToast()
   const supabase = createClient()
 
-  const [turnos, setTurnos] = useState<any[]>([])
-  const [profesionales, setProfesionales] = useState<any[]>([])
+  const [turnos, setTurnos] = useState<{
+    id: string;
+    hora: string;
+    estado: string;
+    afiliados: { nombre: string; apellido: string; dni: string } | null;
+    profesionales: { 
+      nombre: string; 
+      apellido: string; 
+      especialidades: { nombre: string } | null 
+    } | null;
+  }[]>([])
+  const [profesionales, setProfesionales] = useState<{ id: string; nombre: string; apellido: string }[]>([])
   const [loading, setLoading] = useState(true)
 
   // Filtros
@@ -59,7 +68,7 @@ export default function TurnosPage() {
       const res = await fetch(url)
       const data = await res.json()
       if (res.ok) setTurnos(data)
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Error fetching turnos:', error)
     } finally {
       setLoading(false)
@@ -96,8 +105,12 @@ export default function TurnosPage() {
       } else {
         throw new Error('Error al actualizar')
       }
-    } catch (error) {
-      toast({ title: "Error", description: "No se pudo actualizar el estado.", variant: "destructive" })
+    } catch (error: unknown) {
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "No se pudo actualizar el estado.",
+        variant: "destructive",
+      })
     }
   }
 

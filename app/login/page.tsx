@@ -41,10 +41,10 @@ export default function LoginPage() {
       
       router.push('/dashboard')
       router.refresh()
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast({
         title: "Error de acceso",
-        description: error.message || "Credenciales inválidas",
+        description: error instanceof Error ? error.message : "Credenciales inválidas",
         variant: "destructive",
       })
     } finally {

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import type { Database } from '@/types/database'
 
 export async function PATCH(
   req: NextRequest,
@@ -19,7 +20,7 @@ export async function PATCH(
       ...body,
       updated_by: user.id,
       updated_at: new Date().toISOString()
-    } as any)
+    } as Database['public']['Tables']['turnos']['Update'])
     .eq('id', params.id)
     .select()
     .single()

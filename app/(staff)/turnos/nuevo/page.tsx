@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { BuscadorAfiliado } from '@/components/afiliados/BuscadorAfiliado'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Calendar } from '@/components/ui/calendar'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
@@ -14,7 +14,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { useToast } from '@/hooks/use-toast'
 import { format } from 'date-fns'
 import { es } from 'date-fns/locale'
-import { Calendar as CalendarIcon, CheckCircle2, ChevronRight, User, Stethoscope, Clock, FileText } from 'lucide-react'
+import { Calendar as CalendarIcon, CheckCircle2, User, Stethoscope, Clock } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Database } from '@/types/database'
 
@@ -135,10 +135,10 @@ export default function NuevoTurnoPage() {
         description: `El turno para ${afiliado.nombre} ha sido agendado con éxito.`,
       })
       router.push('/turnos')
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast({
         title: "Error",
-        description: error.message,
+        description: error instanceof Error ? error.message : String(error),
         variant: "destructive"
       })
     } finally {
@@ -146,14 +146,6 @@ export default function NuevoTurnoPage() {
     }
   }
 
-  const isStepComplete = (s: number) => {
-    if (s === 1) return !!afiliado
-    if (s === 2) return !!especialidadId
-    if (s === 3) return !!profesionalId
-    if (s === 4) return !!fecha
-    if (s === 5) return !!slot
-    return false
-  }
 
   return (
     <div className="container max-w-2xl py-8">
