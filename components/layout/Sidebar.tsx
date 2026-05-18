@@ -18,61 +18,27 @@ import {
 import { cn } from '@/lib/utils'
 import logo from '../../public/logo.png'
 import { createClient } from '@/lib/supabase/client'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useStaffProfile } from '@/hooks/useStaffProfile'
+import { RolGuard } from '@/components/layout/RolGuard'
 
 const menuItems = [
-  {
-    title: 'DASHBOARDS',
-    roles: ['admin'],
-    items: [
-      { name: 'Analytics', href: '/dashboard', icon: LayoutDashboard },
-    ]
-  },
-  {
-    title: 'GESTIÓN',
-    roles: ['admin', 'recepcion', 'profesional'],
-    items: [
-      { name: 'Turnos', href: '/dashboard/turnos', icon: Calendar },
-      { name: 'Afiliados', href: '/dashboard/afiliados', icon: Users },
-      { name: 'Profesionales', href: '/dashboard/profesionales', icon: User },
-      { name: 'Agenda', href: '/dashboard/agenda', icon: ClipboardList },
-    ]
-  },
-  {
-    title: 'SISTEMA',
-    roles: ['admin'],
-    items: [
-      { name: 'Reportes', href: '/dashboard/reportes', icon: FileText },
-      { name: 'Gestión Staff', href: '/dashboard/configuracion/staff', icon: Users },
-      { name: 'Configuración', href: '/dashboard/configuracion', icon: Settings },
-    ]
-  }
+  { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard, roles: ['admin'] },
+  { name: 'Turnos', href: '/dashboard/turnos', icon: Calendar, roles: ['admin', 'recepcion', 'profesional'] },
+  { name: 'Afiliados', href: '/dashboard/afiliados', icon: Users, roles: ['admin', 'recepcion', 'profesional'] },
+  { name: 'Profesionales', href: '/dashboard/profesionales', icon: User, roles: ['admin', 'recepcion', 'profesional'] },
+  { name: 'Agenda', href: '/dashboard/agenda', icon: ClipboardList, roles: ['admin', 'recepcion', 'profesional'] },
+  { name: 'Reportes', href: '/dashboard/reportes', icon: FileText, roles: ['admin'] },
+  { name: 'Gestión de Staff', href: '/dashboard/configuracion/staff', icon: Users, roles: ['admin'] },
+  { name: 'Configuraciones', href: '/dashboard/configuracion', icon: Settings, roles: ['admin'] },
 ]
 
 export function Sidebar() {
   const pathname = usePathname()
   const router = useRouter()
   const supabase = createClient()
-  const [userProfile, setUserProfile] = useState<{ nombre: string, apellido: string, rol: string } | null>(null)
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    async function getProfile() {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (user) {
-        const { data } = await supabase
-          .from('staff_profiles')
-          .select('nombre, apellido, rol')
-          .eq('id', user.id)
-          .single()
-        
-        if (data) setUserProfile(data)
-      }
-      setLoading(false)
-    }
-    getProfile()
-  }, [supabase])
+  const { profile: userProfile, loading } = useStaffProfile()
 
   const handleSignOut = async () => {
     await supabase.auth.signOut()
@@ -110,39 +76,40 @@ export function Sidebar() {
       <hr className="mx-6 border-slate-700/30" />
 
       {/* Navigation */}
-      <nav className="flex-1 overflow-y-auto p-4 space-y-8 scrollbar-hide">
+      <nav className="flex-1 overflow-y-auto p-4 space-y-1 scrollbar-hide">
         {menuItems
-          .filter(group => group.roles.includes(userProfile?.rol || 'recepcion'))
-          .map((group) => (
-          <div key={group.title} className="space-y-2">
-            <h3 className="px-4 text-[10px] font-bold text-slate-500 tracking-[0.1em] uppercase">
-              {group.title}
-            </h3>
-            <div className="space-y-1">
-              {group.items.map((item) => {
-                const isActive = pathname === item.href
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className={cn(
-                      "flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group",
-                      isActive 
-                        ? "bg-gradient-to-r from-sky-600 to-sky-500 text-white shadow-lg shadow-sky-900/40" 
-                        : "hover:bg-slate-800/50 text-slate-400 hover:text-white"
-                    )}
-                  >
-                    <item.icon className={cn(
-                      "h-5 w-5 transition-colors",
-                      isActive ? "text-white" : "text-slate-500 group-hover:text-white"
-                    )} />
-                    <span className="text-sm font-medium">{item.name}</span>
-                  </Link>
-                )
-              })}
-            </div>
-          </div>
-        ))}
+          .filter(item => item.roles.includes(userProfile?.rol || 'recepcion'))
+          .map((item) => {
+            const isActive = pathname === item.href
+            const content = (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={cn(
+                  "flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group",
+                  isActive 
+                    ? "bg-gradient-to-r from-sky-600 to-sky-500 text-white shadow-lg shadow-sky-900/40" 
+                    : "hover:bg-slate-800/50 text-slate-400 hover:text-white"
+                )}
+              >
+                <item.icon className={cn(
+                  "h-5 w-5 transition-colors",
+                  isActive ? "text-white" : "text-slate-500 group-hover:text-white"
+                )} />
+                <span className="text-sm font-medium">{item.name}</span>
+              </Link>
+            )
+
+            if (item.roles.length === 1 && item.roles[0] === 'admin') {
+              return (
+                <RolGuard key={item.name} roles={['admin']}>
+                  {content}
+                </RolGuard>
+              )
+            }
+
+            return content
+          })}
       </nav>
 
       {/* Footer */}

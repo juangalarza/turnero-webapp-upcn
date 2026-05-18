@@ -218,3 +218,23 @@ INSERT INTO especialidades (nombre, color) VALUES
   ('Psicologia',            '#6366F1'),
   ('Kinesiologia',          '#14B8A6')
 ON CONFLICT (nombre) DO NOTHING;
+
+-- ============================================================
+-- FUNCIÓN: get_staff_email_by_username
+-- ============================================================
+
+CREATE OR REPLACE FUNCTION get_staff_email_by_username(p_username TEXT)
+RETURNS TEXT
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+DECLARE
+  v_email TEXT;
+BEGIN
+  SELECT email INTO v_email
+  FROM staff_profiles
+  WHERE LOWER(username) = LOWER(p_username)
+  LIMIT 1;
+  RETURN v_email;
+END;
+$$;

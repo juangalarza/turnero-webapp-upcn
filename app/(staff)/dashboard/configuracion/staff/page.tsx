@@ -29,6 +29,7 @@ import {
   TableHeader, 
   TableRow 
 } from '@/components/ui/table'
+import { RolGuard } from '@/components/layout/RolGuard'
 
 export default function StaffManagementPage() {
   const { toast } = useToast()
@@ -110,7 +111,8 @@ export default function StaffManagementPage() {
   }
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-500">
+    <RolGuard roles={['admin']}>
+      <div className="space-y-6 animate-in fade-in duration-500">
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold text-slate-800">Gestión de Staff</h1>
@@ -275,5 +277,6 @@ export default function StaffManagementPage() {
         </Table>
       </Card>
     </div>
+    </RolGuard>
   )
 }

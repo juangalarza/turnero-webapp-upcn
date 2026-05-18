@@ -7,30 +7,12 @@ import {
   Globe,
   Loader2
 } from 'lucide-react'
-import { useState, useEffect } from 'react'
-import { createClient } from '@/lib/supabase/client'
+import { useStaffProfile } from '@/hooks/useStaffProfile'
 import TurnosPage from './turnos/page'
 
 export default function DashboardPage() {
-  const [rol, setRol] = useState<string | null>(null)
-  const [loading, setLoading] = useState(true)
-  const supabase = createClient()
-
-  useEffect(() => {
-    async function getRol() {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (user) {
-        const { data } = await supabase
-          .from('staff_profiles')
-          .select('rol')
-          .eq('id', user.id)
-          .single()
-        if (data) setRol(data.rol)
-      }
-      setLoading(false)
-    }
-    getRol()
-  }, [supabase])
+  const { profile: userProfile, loading } = useStaffProfile()
+  const rol = userProfile?.rol
 
   if (loading) {
     return (
