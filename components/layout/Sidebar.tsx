@@ -16,7 +16,7 @@ import {
   Loader2
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import logo from '../../public/logo.png'
+import logoWhite from '../../public/logo-white.png'
 import { createClient } from '@/lib/supabase/client'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
@@ -48,11 +48,8 @@ export function Sidebar() {
   return (
     <aside className="fixed left-4 top-4 bottom-4 w-64 bg-[#1f283e] rounded-3xl overflow-hidden shadow-2xl flex flex-col text-slate-300">
       {/* Brand */}
-      <div className="p-6 flex items-center gap-3 border-b border-slate-700/50">
-        <div className="bg-white p-1.5 rounded-xl shadow-sm">
-          <Image src={logo} alt="Logo" width={28} height={28} className="object-contain" />
-        </div>
-        <span className="font-bold text-white tracking-tight text-lg">UPCN Turnos</span>
+      <div className="p-6 flex justify-center items-center border-b border-slate-700/50">
+        <Image src={logoWhite} alt="UPCN Logo" width={140} height={45} className="object-contain" priority />
       </div>
 
       {/* User Profile */}

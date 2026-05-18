@@ -9,11 +9,13 @@
 
 -- Sedes (multi-sede listo desde el schema, una sola activa por ahora)
 CREATE TABLE IF NOT EXISTS sedes (
-  id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  nombre     TEXT NOT NULL,
-  direccion  TEXT,
-  activa     BOOLEAN DEFAULT true,
-  created_at TIMESTAMPTZ DEFAULT now()
+  id             UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  nombre         TEXT NOT NULL,
+  direccion      TEXT,
+  telefono       TEXT,
+  responsable_id UUID, -- Referencia a staff_profiles(id)
+  activa         BOOLEAN DEFAULT true,
+  created_at     TIMESTAMPTZ DEFAULT now()
 );
 
 -- Especialidades médicas

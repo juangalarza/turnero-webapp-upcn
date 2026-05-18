@@ -11,7 +11,8 @@ import {
   Loader2,
   UserCog,
   Check,
-  AlertCircle
+  AlertCircle,
+  Plus
 } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import { Button } from '@/components/ui/button'
@@ -190,11 +191,8 @@ export default function ProfesionalesPage() {
           <h1 className="text-2xl font-bold text-slate-800">Profesionales</h1>
           <p className="text-slate-500">Gestiona los médicos y prestadores del sistema.</p>
         </div>
-        <Button 
-          onClick={() => setIsAdding(!isAdding)}
-          className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl px-6 py-6 shadow-lg shadow-indigo-200 transition-all flex gap-2 h-auto"
-        >
-          {isAdding ? <X className="h-5 w-5" /> : <UserPlus className="h-5 w-5" />}
+        <Button onClick={() => setIsAdding(!isAdding)}>
+          {isAdding ? <X className="mr-2 h-4 w-4" /> : <Plus className="mr-2 h-4 w-4" />}
           {isAdding ? 'Cancelar' : 'Nuevo Profesional'}
         </Button>
       </div>

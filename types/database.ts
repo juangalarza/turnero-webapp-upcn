@@ -14,6 +14,8 @@ export type Database = {
           id: string
           nombre: string
           direccion: string | null
+          telefono: string | null
+          responsable_id: string | null
           activa: boolean | null
           created_at: string | null
         }
@@ -21,6 +23,8 @@ export type Database = {
           id?: string
           nombre: string
           direccion?: string | null
+          telefono?: string | null
+          responsable_id?: string | null
           activa?: boolean | null
           created_at?: string | null
         }
@@ -28,6 +32,8 @@ export type Database = {
           id?: string
           nombre?: string
           direccion?: string | null
+          telefono?: string | null
+          responsable_id?: string | null
           activa?: boolean | null
           created_at?: string | null
         }

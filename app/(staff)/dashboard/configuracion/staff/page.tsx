@@ -15,7 +15,8 @@ import {
   Loader2,
   Trash2,
   UserCheck,
-  UserCog
+  UserCog,
+  Plus
 } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import { Button } from '@/components/ui/button'
@@ -118,11 +119,8 @@ export default function StaffManagementPage() {
           <h1 className="text-2xl font-bold text-slate-800">Gestión de Staff</h1>
           <p className="text-slate-500">Administra los usuarios del sistema y sus permisos.</p>
         </div>
-        <Button 
-          onClick={() => setIsAdding(!isAdding)}
-          className="bg-sky-600 hover:bg-sky-700 text-white rounded-xl px-6 py-6 shadow-lg shadow-sky-200 transition-all flex gap-2 h-auto"
-        >
-          {isAdding ? <X className="h-5 w-5" /> : <UserPlus className="h-5 w-5" />}
+        <Button onClick={() => setIsAdding(!isAdding)}>
+          {isAdding ? <X className="mr-2 h-4 w-4" /> : <Plus className="mr-2 h-4 w-4" />}
           {isAdding ? 'Cancelar' : 'Nuevo Usuario'}
         </Button>
       </div>

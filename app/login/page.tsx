@@ -47,7 +47,7 @@ export default function LoginPage() {
         title: "Sesión iniciada",
         description: "Bienvenido al sistema de gestión de turnos.",
       })
-      
+
       router.push('/dashboard')
       router.refresh()
     } catch (error: any) {
@@ -67,7 +67,7 @@ export default function LoginPage() {
       <div className="relative hidden w-1/2 lg:block">
         <Image
           src={bgLogin}
-          alt="UPCN Salud"
+          alt="UPCN Seccional San Juan"
           fill
           className="object-cover"
           priority
@@ -80,16 +80,16 @@ export default function LoginPage() {
         <div className="w-full max-w-md space-y-8">
           <div className="space-y-2 text-center">
             <div className="flex items-center justify-center mb-6">
-              <Image 
-                src={logo} 
-                alt="Logo Institucional" 
-                width={200} 
-                height={80} 
+              <Image
+                src={logo}
+                alt="Logo Institucional"
+                width={200}
+                height={80}
                 className="object-contain"
                 priority
               />
             </div>
-            
+
             <h1 className="text-3xl font-bold tracking-tight text-slate-900">Gestión de Turnos</h1>
             <p className="text-slate-500 max-w-xs mx-auto">
               Inicia sesión para gestionar citas y pacientes.
@@ -104,7 +104,7 @@ export default function LoginPage() {
               <Input
                 id="username"
                 type="text"
-                placeholder="Ej: jgalarza"
+                placeholder="Usuario"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 required
@@ -145,18 +145,18 @@ export default function LoginPage() {
             </div>
 
             <div className="flex items-center space-x-2">
-              <input 
-                type="checkbox" 
-                id="remember" 
-                className="h-4 w-4 rounded border-slate-300 text-sky-600 focus:ring-sky-500 cursor-pointer" 
+              <input
+                type="checkbox"
+                id="remember"
+                className="h-4 w-4 rounded border-slate-300 text-sky-600 focus:ring-sky-500 cursor-pointer"
               />
               <Label htmlFor="remember" className="text-sm font-normal text-slate-500 cursor-pointer">
                 Recordar mi sesión
               </Label>
             </div>
 
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               disabled={loading}
               className="w-full bg-sky-600 hover:bg-sky-700 text-white font-semibold py-6 text-base shadow-md shadow-sky-100 transition-all active:scale-[0.98]"
             >
