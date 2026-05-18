@@ -87,7 +87,7 @@ export default function EditSedePage({ params }: { params: { slug: string } }) {
         direccion: sede.direccion || '',
         telefono: sede.telefono || '',
         responsable_id: sede.responsable_id || 'none',
-        activa: sede.activa
+        activa: sede.activa ?? false
       })
       
       setStaff(staffRes.data || [])
