@@ -11,6 +11,7 @@ import { Card } from '@/components/ui/card'
 import { Calendar } from '@/components/ui/calendar'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Label } from '@/components/ui/label'
 
 export default function AgendaPage() {
   const supabase = createClient()
