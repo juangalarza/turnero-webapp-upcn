@@ -51,15 +51,23 @@ export default function SedesPage() {
   async function fetchData() {
     try {
       const [sedesRes, staffRes] = await Promise.all([
-        supabase.from('sedes').select('*, responsable:staff_profiles!responsable_id(nombre, apellido)').order('nombre'),
+        supabase.from('sedes').select('*').order('nombre'),
         supabase.from('staff_profiles').select('id, nombre, apellido').order('apellido')
       ])
       
       if (sedesRes.error) throw sedesRes.error
       if (staffRes.error) throw staffRes.error
+
+      const staffList = staffRes.data || []
+
+      // Merge manual: adjuntar datos del responsable usando responsable_id
+      const sedesConResponsable = (sedesRes.data || []).map((sede) => ({
+        ...sede,
+        responsable: staffList.find((u) => u.id === sede.responsable_id) ?? null,
+      }))
       
-      setSedes(sedesRes.data || [])
-      setStaff(staffRes.data || [])
+      setSedes(sedesConResponsable)
+      setStaff(staffList)
     } catch (error: any) {
       toast({ title: "Error", description: error.message, variant: "destructive" })
     } finally {
