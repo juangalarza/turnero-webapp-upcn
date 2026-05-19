@@ -29,6 +29,7 @@ import {
   TableRow 
 } from '@/components/ui/table'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import Link from 'next/link'
 
 import { RolGuard } from '@/components/layout/RolGuard'
 
@@ -42,6 +43,24 @@ export default function ProfesionalesPage() {
   const [isAdding, setIsAdding] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
   
+  type HorarioProfBloque = {
+    id: number;
+    dias: number[];
+    hora_inicio: string;
+    hora_fin: string;
+    duracion: number;
+    isCustomDuration: boolean;
+  }
+
+  const [horariosProf, setHorariosProf] = useState<HorarioProfBloque[]>([{
+    id: Date.now(),
+    dias: [],
+    hora_inicio: '08:00',
+    hora_fin: '16:00',
+    duracion: 20,
+    isCustomDuration: false
+  }])
+
   // Form state
   const [formData, setFormData] = useState({
     nombre: '',
@@ -49,12 +68,7 @@ export default function ProfesionalesPage() {
     matricula: '',
     telefono: '',
     especialidad_id: '',
-    activo: true,
-    // Horarios
-    dias: [] as number[],
-    hora_inicio: '08:00',
-    hora_fin: '16:00',
-    duracion: 20
+    activo: true
   })
 
   const DIAS_SEMANA = [
@@ -94,15 +108,7 @@ export default function ProfesionalesPage() {
     }
   }
 
-  const toggleDia = (diaId: number) => {
-    setFormData(prev => {
-      if (prev.dias.includes(diaId)) {
-        return { ...prev, dias: prev.dias.filter(d => d !== diaId) }
-      } else {
-        return { ...prev, dias: [...prev.dias, diaId] }
-      }
-    })
-  }
+  // toggleDia ha sido reemplazado por la lógica de bloques
 
   async function handleAddProfesional(e: React.FormEvent) {
     e.preventDefault()
@@ -112,8 +118,10 @@ export default function ProfesionalesPage() {
       return
     }
 
-    if (formData.dias.length === 0) {
-      toast({ title: "Faltan Horarios", description: "Selecciona al menos un día de atención.", variant: "destructive" })
+    const isCupo = especialidades.find(e => e.id === formData.especialidad_id)?.tipo_prestacion === 'cupo';
+
+    if (!isCupo && horariosProf.some(h => h.dias.length === 0)) {
+      toast({ title: "Faltan Horarios", description: "Todos los horarios deben tener al menos un día seleccionado.", variant: "destructive" })
       return
     }
 
@@ -136,18 +144,22 @@ export default function ProfesionalesPage() {
 
       if (profError) throw profError
 
-      // 2. Crear Horarios
-      const horarios = formData.dias.map(dia => ({
-        profesional_id: newProf.id,
-        dia_semana: dia,
-        hora_inicio: formData.hora_inicio,
-        hora_fin: formData.hora_fin,
-        duracion_turno_minutos: formData.duracion,
-        activo: true
-      }))
+      // 2. Crear Horarios (sólo para Turnos)
+      if (!isCupo) {
+        const horarios = horariosProf.flatMap(bloque => 
+          bloque.dias.map(dia => ({
+            profesional_id: newProf.id,
+            dia_semana: dia,
+            hora_inicio: bloque.hora_inicio,
+            hora_fin: bloque.hora_fin,
+            duracion_turno_minutos: bloque.duracion,
+            activo: true
+          }))
+        )
 
-      const { error: horError } = await supabase.from('horarios_atencion').insert(horarios)
-      if (horError) throw horError
+        const { error: horError } = await supabase.from('horarios_atencion').insert(horarios)
+        if (horError) throw horError
+      }
 
       toast({
         title: "Profesional registrado",
@@ -157,9 +169,11 @@ export default function ProfesionalesPage() {
       setIsAdding(false)
       setFormData({
         nombre: '', apellido: '', matricula: '', telefono: '',
-        especialidad_id: '', activo: true,
-        dias: [], hora_inicio: '08:00', hora_fin: '16:00', duracion: 20
+        especialidad_id: '', activo: true
       })
+      setHorariosProf([{
+        id: Date.now(), dias: [], hora_inicio: '08:00', hora_fin: '16:00', duracion: 20, isCustomDuration: false
+      }])
       fetchData()
 
     } catch (error: any) {
@@ -231,10 +245,12 @@ export default function ProfesionalesPage() {
                 <Input value={formData.apellido} onChange={e => setFormData({...formData, apellido: e.target.value})} className="bg-white h-11 rounded-xl" required />
               </div>
 
-              <div className="space-y-2">
-                <Label className="text-indigo-700 font-semibold ml-1">Matrícula</Label>
-                <Input value={formData.matricula} onChange={e => setFormData({...formData, matricula: e.target.value})} placeholder="Ej: MP 1234" className="bg-white h-11 rounded-xl" />
-              </div>
+              {especialidades.find(e => e.id === formData.especialidad_id)?.tipo_prestacion !== 'cupo' && (
+                <div className="space-y-2">
+                  <Label className="text-indigo-700 font-semibold ml-1">Matrícula</Label>
+                  <Input value={formData.matricula} onChange={e => setFormData({...formData, matricula: e.target.value})} placeholder="Ej: MP 1234" className="bg-white h-11 rounded-xl" />
+                </div>
+              )}
 
               <div className="space-y-2">
                 <Label className="text-indigo-700 font-semibold ml-1">Teléfono</Label>
@@ -253,64 +269,170 @@ export default function ProfesionalesPage() {
               </div>
             </div>
 
-            {/* Horarios */}
-            <div className="bg-white border border-indigo-100 rounded-2xl p-6">
-              <h3 className="text-sm font-bold text-indigo-900 uppercase tracking-wider mb-4 flex items-center gap-2">
-                <Clock className="h-4 w-4" /> Días y Horarios de Atención
-              </h3>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {/* Días */}
-                <div className="space-y-3">
-                  <Label className="text-slate-500 font-semibold">Días de la semana *</Label>
-                  <div className="flex flex-wrap gap-2">
-                    {DIAS_SEMANA.map(dia => {
-                      const isSelected = formData.dias.includes(dia.id)
-                      return (
-                        <button
-                          key={dia.id}
-                          type="button"
-                          onClick={() => toggleDia(dia.id)}
-                          className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
-                            isSelected 
-                              ? 'bg-indigo-600 text-white shadow-md shadow-indigo-200' 
-                              : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                          }`}
-                        >
-                          {dia.label}
-                        </button>
-                      )
-                    })}
-                  </div>
-                </div>
+            {/* Horarios - Sólo para profesionales de Turno */}
+            {especialidades.find(e => e.id === formData.especialidad_id)?.tipo_prestacion !== 'cupo' && (
+              <div className="space-y-4">
+                {horariosProf.map((bloque, index) => (
+                  <div key={bloque.id} className="bg-white border border-indigo-100 rounded-2xl p-6 shadow-sm relative">
+                    {horariosProf.length > 1 && (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="absolute top-4 right-4 text-slate-400 hover:text-rose-500"
+                        onClick={() => setHorariosProf(horariosProf.filter(h => h.id !== bloque.id))}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    )}
+                    <h3 className="text-sm font-bold text-indigo-900 uppercase tracking-wider mb-4 flex items-center gap-2">
+                      <Clock className="h-4 w-4" /> Horario {index + 1}
+                    </h3>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                      {/* Días */}
+                      <div className="space-y-3">
+                        <Label className="text-slate-500 font-semibold uppercase text-xs">Días de la semana *</Label>
+                        <div className="flex flex-wrap gap-2">
+                          {DIAS_SEMANA.map(dia => {
+                            const isSelected = bloque.dias.includes(dia.id)
+                            return (
+                              <button
+                                key={dia.id}
+                                type="button"
+                                onClick={() => {
+                                  const newHorarios = [...horariosProf];
+                                  if (isSelected) {
+                                    newHorarios[index].dias = bloque.dias.filter(d => d !== dia.id)
+                                  } else {
+                                    newHorarios[index].dias = [...bloque.dias, dia.id]
+                                  }
+                                  setHorariosProf(newHorarios)
+                                }}
+                                className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
+                                  isSelected 
+                                    ? 'bg-indigo-600 text-white shadow-md shadow-indigo-200' 
+                                    : 'bg-slate-50 text-slate-600 hover:bg-slate-100 border border-slate-200'
+                                }`}
+                              >
+                                {dia.label}
+                              </button>
+                            )
+                          })}
+                        </div>
+                      </div>
 
-                {/* Tiempos */}
-                <div className="grid grid-cols-3 gap-4">
-                  <div className="space-y-2">
-                    <Label className="text-slate-500 font-semibold">Hora Inicio</Label>
-                    <Input type="time" value={formData.hora_inicio} onChange={e => setFormData({...formData, hora_inicio: e.target.value})} className="h-11 rounded-xl" required />
+                      {/* Tiempos */}
+                      <div className="grid grid-cols-3 gap-4">
+                        <div className="space-y-2">
+                          <Label className="text-slate-500 font-semibold uppercase text-xs">Hora Inicio</Label>
+                          <Input 
+                            type="time" 
+                            value={bloque.hora_inicio} 
+                            onChange={e => {
+                              const newHorarios = [...horariosProf];
+                              newHorarios[index].hora_inicio = e.target.value;
+                              setHorariosProf(newHorarios)
+                            }} 
+                            className="h-11 rounded-xl bg-white" required 
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label className="text-slate-500 font-semibold uppercase text-xs">Hora Fin</Label>
+                          <Input 
+                            type="time" 
+                            value={bloque.hora_fin} 
+                            onChange={e => {
+                              const newHorarios = [...horariosProf];
+                              newHorarios[index].hora_fin = e.target.value;
+                              setHorariosProf(newHorarios)
+                            }} 
+                            className="h-11 rounded-xl bg-white" required 
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label className="text-slate-500 font-semibold uppercase text-xs">Duración (min)</Label>
+                          {!bloque.isCustomDuration ? (
+                            <Select 
+                              value={bloque.duracion.toString()} 
+                              onValueChange={(v) => {
+                                const newHorarios = [...horariosProf];
+                                if (v === 'custom') {
+                                  newHorarios[index].isCustomDuration = true;
+                                } else {
+                                  newHorarios[index].duracion = parseInt(v);
+                                }
+                                setHorariosProf(newHorarios)
+                              }}
+                            >
+                              <SelectTrigger className="h-11 rounded-xl bg-white">
+                                <SelectValue placeholder="Duración..." />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="15">15 min</SelectItem>
+                                <SelectItem value="20">20 min</SelectItem>
+                                <SelectItem value="30">30 min</SelectItem>
+                                <SelectItem value="45">45 min</SelectItem>
+                                <SelectItem value="60">1 hora</SelectItem>
+                                <SelectItem value="custom" className="text-indigo-600 font-medium">Personalizado...</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          ) : (
+                            <div className="flex items-center gap-2">
+                              <Input 
+                                type="number" 
+                                min="1"
+                                value={bloque.duracion || ''}
+                                onChange={(e) => {
+                                  const newHorarios = [...horariosProf];
+                                  newHorarios[index].duracion = parseInt(e.target.value) || 0;
+                                  setHorariosProf(newHorarios)
+                                }}
+                                className="h-11 rounded-xl bg-white" 
+                                placeholder="Min"
+                              />
+                              <Button 
+                                type="button" 
+                                variant="ghost" 
+                                size="icon"
+                                onClick={() => {
+                                  const newHorarios = [...horariosProf];
+                                  newHorarios[index].isCustomDuration = false;
+                                  newHorarios[index].duracion = 20;
+                                  setHorariosProf(newHorarios)
+                                }}
+                              >
+                                <X className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                  <div className="space-y-2">
-                    <Label className="text-slate-500 font-semibold">Hora Fin</Label>
-                    <Input type="time" value={formData.hora_fin} onChange={e => setFormData({...formData, hora_fin: e.target.value})} className="h-11 rounded-xl" required />
-                  </div>
-                  <div className="space-y-2">
-                    <Label className="text-slate-500 font-semibold">Duración (min)</Label>
-                    <Select value={formData.duracion.toString()} onValueChange={(v) => setFormData({...formData, duracion: parseInt(v)})}>
-                      <SelectTrigger className="h-11 rounded-xl">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="15">15 min</SelectItem>
-                        <SelectItem value="20">20 min</SelectItem>
-                        <SelectItem value="30">30 min</SelectItem>
-                        <SelectItem value="60">1 hora</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
+                ))}
+
+                <div className="flex justify-start">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="border-dashed border-2 border-slate-200 text-slate-500 hover:text-indigo-600 hover:border-indigo-300 hover:bg-indigo-50 rounded-xl w-full md:w-auto"
+                    onClick={() => {
+                      setHorariosProf([...horariosProf, {
+                        id: Date.now(),
+                        dias: [],
+                        hora_inicio: '08:00',
+                        hora_fin: '16:00',
+                        duracion: 20,
+                        isCustomDuration: false
+                      }])
+                    }}
+                  >
+                    + Añadir otro horario distinto
+                  </Button>
                 </div>
               </div>
-            </div>
+            )}
 
             <div className="flex justify-end gap-3 pt-2">
               <Button 
@@ -385,8 +507,10 @@ export default function ProfesionalesPage() {
                     </div>
                   </TableCell>
                   <TableCell className="text-right px-6">
-                    <Button variant="ghost" size="sm" className="text-slate-400 hover:text-indigo-600 rounded-lg">
-                      <UserCog className="h-4 w-4" />
+                    <Button variant="ghost" size="sm" asChild className="text-slate-400 hover:text-indigo-600 rounded-lg">
+                      <Link href={`/dashboard/profesionales/${p.id}/editar`}>
+                        <UserCog className="h-4 w-4" />
+                      </Link>
                     </Button>
                   </TableCell>
                 </TableRow>

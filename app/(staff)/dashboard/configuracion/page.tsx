@@ -1,6 +1,7 @@
 import { RolGuard } from '@/components/layout/RolGuard'
 import Link from 'next/link'
 import { Card } from '@/components/ui/card'
+import { ListaEsperaConfig } from '@/components/configuracion/ListaEsperaConfig'
 import { 
   Users, 
   Building2, 
@@ -105,6 +106,11 @@ export default function ConfiguracionHubPage() {
               </Card>
             </Link>
           ))}
+        </div>
+
+        {/* Configuración Global de Lista de Espera */}
+        <div className="mt-12">
+          <ListaEsperaConfig />
         </div>
 
       </div>

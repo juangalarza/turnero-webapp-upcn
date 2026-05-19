@@ -44,18 +44,21 @@ export type Database = {
           id: string
           nombre: string
           color: string | null
+          tipo_prestacion: 'turno' | 'cupo' | null
           activa: boolean | null
         }
         Insert: {
           id?: string
           nombre: string
           color?: string | null
+          tipo_prestacion?: 'turno' | 'cupo' | null
           activa?: boolean | null
         }
         Update: {
           id?: string
           nombre?: string
           color?: string | null
+          tipo_prestacion?: 'turno' | 'cupo' | null
           activa?: boolean | null
         }
         Relationships: []
@@ -406,6 +409,154 @@ export type Database = {
             columns: ["sede_id"]
             isOneToOne: false
             referencedRelation: "sedes"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      configuraciones: {
+        Row: {
+          id: string
+          lista_espera_limite: number | null
+        }
+        Insert: {
+          id?: string
+          lista_espera_limite?: number | null
+        }
+        Update: {
+          id?: string
+          lista_espera_limite?: number | null
+        }
+        Relationships: []
+      }
+      clases: {
+        Row: {
+          id: string
+          profesional_id: string | null
+          nombre: string
+          descripcion: string | null
+          dia_semana: string
+          hora_inicio: string
+          hora_fin: string
+          cupo_maximo: number
+          lista_espera_limite: number | null
+          activa: boolean | null
+        }
+        Insert: {
+          id?: string
+          profesional_id?: string | null
+          nombre: string
+          descripcion?: string | null
+          dia_semana: string
+          hora_inicio: string
+          hora_fin: string
+          cupo_maximo: number
+          lista_espera_limite?: number | null
+          activa?: boolean | null
+        }
+        Update: {
+          id?: string
+          profesional_id?: string | null
+          nombre?: string
+          descripcion?: string | null
+          dia_semana?: string
+          hora_inicio?: string
+          hora_fin?: string
+          cupo_maximo?: number
+          lista_espera_limite?: number | null
+          activa?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "clases_profesional_id_fkey"
+            columns: ["profesional_id"]
+            isOneToOne: false
+            referencedRelation: "profesionales"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      inscripciones: {
+        Row: {
+          id: string
+          clase_id: string | null
+          perfil_id: string | null
+          estado: string
+          posicion_espera: number | null
+          fecha_inscripcion: string | null
+          fecha_baja: string | null
+          notas_admin: string | null
+        }
+        Insert: {
+          id?: string
+          clase_id?: string | null
+          perfil_id?: string | null
+          estado?: string
+          posicion_espera?: number | null
+          fecha_inscripcion?: string | null
+          fecha_baja?: string | null
+          notas_admin?: string | null
+        }
+        Update: {
+          id?: string
+          clase_id?: string | null
+          perfil_id?: string | null
+          estado?: string
+          posicion_espera?: number | null
+          fecha_inscripcion?: string | null
+          fecha_baja?: string | null
+          notas_admin?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "inscripciones_clase_id_fkey"
+            columns: ["clase_id"]
+            isOneToOne: false
+            referencedRelation: "clases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "inscripciones_perfil_id_fkey"
+            columns: ["perfil_id"]
+            isOneToOne: false
+            referencedRelation: "afiliados"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      asistencia: {
+        Row: {
+          id: string
+          inscripcion_id: string | null
+          fecha: string
+          presente: boolean | null
+          justificada: boolean | null
+          nota: string | null
+          registrado_por: string | null
+        }
+        Insert: {
+          id?: string
+          inscripcion_id?: string | null
+          fecha: string
+          presente?: boolean | null
+          justificada?: boolean | null
+          nota?: string | null
+          registrado_por?: string | null
+        }
+        Update: {
+          id?: string
+          inscripcion_id?: string | null
+          fecha?: string
+          presente?: boolean | null
+          justificada?: boolean | null
+          nota?: string | null
+          registrado_por?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "asistencia_inscripcion_id_fkey"
+            columns: ["inscripcion_id"]
+            isOneToOne: false
+            referencedRelation: "inscripciones"
             referencedColumns: ["id"]
           }
         ]

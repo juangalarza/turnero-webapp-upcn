@@ -41,11 +41,11 @@ export default function ProfilePage() {
 
       if (error) throw error
       if (data) setProfile(data)
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching profile:', error)
       toast({
-        title: "Error",
-        description: "No se pudo cargar la información del perfil.",
+        title: "Error al cargar perfil",
+        description: error?.message || JSON.stringify(error) || "Error desconocido",
         variant: "destructive"
       })
     } finally {

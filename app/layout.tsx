@@ -18,7 +18,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Sistema de Turnos UPCN",
-  description: "Gestión interna de turnos médicos - UPCN San Juan",
+  description: "Gestión de turnos - UPCN Seccional San Juan",
 };
 
 export default function RootLayout({

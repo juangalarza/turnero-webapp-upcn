@@ -11,12 +11,12 @@ export default function StaffLayout({ children }: { children: React.ReactNode })
 
       {/* Main Content Area */}
       <div className="flex-1 lg:ml-[288px] min-h-screen flex flex-col">
-        <Header />
-        <main className="flex-1 p-6 lg:p-8 pt-2">
-          <div className="max-w-[1400px] mx-auto">
+        <div className="w-full mx-auto flex flex-col flex-1">
+          <Header />
+          <main className="flex-1 p-6 lg:p-8 pt-2">
             {children}
-          </div>
-        </main>
+          </main>
+        </div>
       </div>
     </div>
   )

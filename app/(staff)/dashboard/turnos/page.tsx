@@ -44,10 +44,10 @@ export default function TurnosPage() {
     hora: string;
     estado: string;
     afiliados: { nombre: string; apellido: string; dni: string } | null;
-    profesionales: { 
-      nombre: string; 
-      apellido: string; 
-      especialidades: { nombre: string } | null 
+    profesionales: {
+      nombre: string;
+      apellido: string;
+      especialidades: { nombre: string } | null
     } | null;
   }[]>([])
   const [profesionales, setProfesionales] = useState<{ id: string; nombre: string; apellido: string }[]>([])
@@ -115,7 +115,7 @@ export default function TurnosPage() {
   }
 
   return (
-    <div className="container py-8 space-y-6">
+    <div className="space-y-6 w-full">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold">Gestión de Turnos</h1>

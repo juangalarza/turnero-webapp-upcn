@@ -13,7 +13,8 @@ import {
   LogOut,
   User,
   ClipboardList,
-  Loader2
+  Loader2,
+  Activity
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import logoWhite from '../../public/logo-white.png'
@@ -26,11 +27,11 @@ import { RolGuard } from '@/components/layout/RolGuard'
 const menuItems = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard, roles: ['admin'] },
   { name: 'Turnos', href: '/dashboard/turnos', icon: Calendar, roles: ['admin', 'recepcion', 'profesional'] },
+  { name: 'Clases', href: '/dashboard/clases', icon: Activity, roles: ['admin', 'recepcion', 'profesional'] },
   { name: 'Afiliados', href: '/dashboard/afiliados', icon: Users, roles: ['admin', 'recepcion', 'profesional'] },
   { name: 'Profesionales', href: '/dashboard/profesionales', icon: User, roles: ['admin', 'recepcion', 'profesional'] },
   { name: 'Agenda', href: '/dashboard/agenda', icon: ClipboardList, roles: ['admin', 'recepcion', 'profesional'] },
   { name: 'Reportes', href: '/dashboard/reportes', icon: FileText, roles: ['admin'] },
-  { name: 'Gestión de Staff', href: '/dashboard/configuracion/staff', icon: Users, roles: ['admin'] },
   { name: 'Configuraciones', href: '/dashboard/configuracion', icon: Settings, roles: ['admin'] },
 ]
 

@@ -28,7 +28,7 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-500">
+    <div className="space-y-12 animate-in fade-in duration-500">
       {/* Top Card: Turnos por Especialidad (Inspired by Sales by Country) */}
       <div className="bg-white rounded-[2rem] shadow-xl shadow-slate-200/50 p-8 overflow-hidden relative">
         <div className="flex flex-col lg:flex-row gap-12">
@@ -75,7 +75,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Grid of Chart Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pt-6">
         {/* Blue Card: Website Views / Pacientes */}
         <div className="bg-white rounded-[2rem] shadow-xl shadow-slate-200/50 flex flex-col group">
           <div className="p-4 pt-4 px-4">
